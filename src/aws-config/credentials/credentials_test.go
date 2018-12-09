@@ -121,6 +121,19 @@ func TestAwsCredentialsFile_Credentials(t *testing.T) {
 		}
 	})
 
+	t.Run("missing-default", func(t *testing.T) {
+		data := []byte("[s1]\nkey = val\n")
+		f, err := Load(data)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if _, err := f.Credentials(""); err == nil {
+			t.Error("loaded a non-existent default profile")
+			return
+		}
+	})
+
 	t.Run("missing-section", func(t *testing.T) {
 		f, err := Load(CredFile)
 		if err != nil {
