@@ -1,3 +1,6 @@
-pkg/**
-src/*/vendor/**
-.idea/**
+bin/
+pkg/
+src/
+vendor/
+
+.idea/
