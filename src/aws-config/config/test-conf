@@ -1,0 +1,10 @@
+[default]
+region = us-east-2
+output = text
+
+[profile other]
+aws_api_key_duration = 4h
+
+[profile empty]
+
+[bad-ish]
