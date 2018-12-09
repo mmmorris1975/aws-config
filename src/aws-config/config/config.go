@@ -36,6 +36,9 @@ func Load(source interface{}) (*AwsConfigFile, error) {
 	return &AwsConfigFile{File: s}, nil
 }
 
+// Retrieve the configuration for the provided profile.  Since there is no explicit format of the profile
+// data (the cli/sdk defines some values, but allows custom attributes), the returned value is the ini file
+// section data, where the call will be able to process the profile attributes locally.
 func (f *AwsConfigFile) Profile(profile string) (*ini.Section, error) {
 	var s *ini.Section
 	p := ResolveProfile(&profile)

@@ -67,7 +67,7 @@ func (f *AwsCredentialsFile) Credentials(profile string) (credentials.Value, err
 // Update the credentials for a given profile, with the provided credentials.  The creds can be
 // an iam.AccessKey or credentials.Value type (or pointers to either).  Updates are only made to
 // the in-memory representation of the data, it is the caller's responsibility to persist the
-// information to storage (either via the SaveTo() or WriteTo() methods).
+// information to storage, either via the SaveTo() or WriteTo() methods.
 func (f *AwsCredentialsFile) UpdateCredentials(profile string, creds interface{}) error {
 	// this feels sort of dangerous, but does allow us to obey env vars
 	p := ResolveProfile(&profile)
