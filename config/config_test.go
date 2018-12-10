@@ -64,12 +64,12 @@ func TestLoad(t *testing.T) {
 }
 
 func TestAwsConfigFile_Profile(t *testing.T) {
-	t.Run("explicit-default", func(t *testing.T) {
-		f, err := Load(ConfFile)
-		if err != nil {
-			t.Fatal(err)
-		}
+	f, err := Load(ConfFile)
+	if err != nil {
+		t.Fatal(err)
+	}
 
+	t.Run("explicit-default", func(t *testing.T) {
 		if _, err := f.Profile("default"); err != nil {
 			t.Error(err)
 			return
@@ -77,11 +77,6 @@ func TestAwsConfigFile_Profile(t *testing.T) {
 	})
 
 	t.Run("empty", func(t *testing.T) {
-		f, err := Load(ConfFile)
-		if err != nil {
-			t.Fatal(err)
-		}
-
 		if _, err := f.Profile(""); err != nil {
 			t.Error(err)
 			return
@@ -89,11 +84,6 @@ func TestAwsConfigFile_Profile(t *testing.T) {
 	})
 
 	t.Run("non-default", func(t *testing.T) {
-		f, err := Load(ConfFile)
-		if err != nil {
-			t.Fatal(err)
-		}
-
 		s, err := f.Profile("other")
 		if err != nil {
 			t.Error(err)
@@ -107,11 +97,6 @@ func TestAwsConfigFile_Profile(t *testing.T) {
 	})
 
 	t.Run("missing-section", func(t *testing.T) {
-		f, err := Load(ConfFile)
-		if err != nil {
-			t.Fatal(err)
-		}
-
 		if _, err := f.Profile("missing"); err == nil {
 			t.Error("succeeded in loading a missing profile")
 			return
@@ -119,11 +104,6 @@ func TestAwsConfigFile_Profile(t *testing.T) {
 	})
 
 	t.Run("empty-section", func(t *testing.T) {
-		f, err := Load(ConfFile)
-		if err != nil {
-			t.Fatal(err)
-		}
-
 		if _, err := f.Profile("empty"); err != nil {
 			t.Error(err)
 			return
@@ -131,11 +111,6 @@ func TestAwsConfigFile_Profile(t *testing.T) {
 	})
 
 	t.Run("bare-profile", func(t *testing.T) {
-		f, err := Load(ConfFile)
-		if err != nil {
-			t.Fatal(err)
-		}
-
 		// While loading a non-default profile which isn't prefixed with 'profile' is discouraged by the AWS
 		// cli/sdk, it's not bad form for the ini-file format.
 		if _, err := f.Profile("bad-ish"); err != nil {
@@ -144,29 +119,11 @@ func TestAwsConfigFile_Profile(t *testing.T) {
 		}
 	})
 
-	t.Run("missing-default", func(t *testing.T) {
-		data := []byte("[s1]\nkey = val\n")
-		f, err := Load(data)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if _, err := f.Profile(""); err == nil {
-			t.Error("loaded a non-existent default profile")
-			return
-		}
-	})
-
 	t.Run("profile-env-var", func(t *testing.T) {
 		os.Setenv(ProfileEnvVar, "other")
 		defer os.Unsetenv(ProfileEnvVar)
 
-		f, err := Load(ConfFile)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		s, err := f.Profile("other")
+		s, err := f.Profile("")
 		if err != nil {
 			t.Error(err)
 			return
@@ -182,12 +139,7 @@ func TestAwsConfigFile_Profile(t *testing.T) {
 		os.Setenv(DefaultProfileEnvVar, "other")
 		defer os.Unsetenv(DefaultProfileEnvVar)
 
-		f, err := Load(ConfFile)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		s, err := f.Profile("other")
+		s, err := f.Profile("")
 		if err != nil {
 			t.Error(err)
 			return
@@ -195,6 +147,19 @@ func TestAwsConfigFile_Profile(t *testing.T) {
 
 		if _, err := s.GetKey("aws_api_key_duration"); err != nil {
 			t.Error(err)
+			return
+		}
+	})
+
+	t.Run("missing-default", func(t *testing.T) {
+		data := []byte("[s1]\nkey = val\n")
+		f, err := Load(data)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if _, err := f.Profile(""); err == nil {
+			t.Error("loaded a non-existent default profile")
 			return
 		}
 	})
