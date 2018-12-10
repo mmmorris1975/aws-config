@@ -24,7 +24,7 @@ func Load(source interface{}) (*AwsConfigFile, error) {
 		if v, ok := os.LookupEnv(ConfFileEnvVar); ok {
 			source = v
 		} else {
-			source = defaults.SharedCredentialsFilename()
+			source = defaults.SharedConfigFilename()
 		}
 	}
 
