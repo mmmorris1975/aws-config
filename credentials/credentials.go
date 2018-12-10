@@ -20,6 +20,7 @@ type awsCredentials struct {
 
 type AwsCredentialsFile struct {
 	*ini.File
+	Path string
 }
 
 // load the file from the provides source, which may be a string representing a file name,
@@ -40,7 +41,15 @@ func Load(source interface{}) (*AwsCredentialsFile, error) {
 	}
 	s.BlockMode = true
 
-	return &AwsCredentialsFile{File: s}, nil
+	c := &AwsCredentialsFile{File: s}
+	switch t := source.(type) {
+	case string:
+		c.Path = t
+	default:
+		c.Path = ""
+	}
+
+	return c, nil
 }
 
 // Retrieve the credentials for a given profile name, and provide them as a credentials.Value type

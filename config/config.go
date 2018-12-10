@@ -13,6 +13,7 @@ const ConfFileEnvVar = "AWS_CONFIG_FILE"
 
 type AwsConfigFile struct {
 	*ini.File
+	Path string
 }
 
 // load the file from the provides source, which may be a string representing a file name,
@@ -33,7 +34,15 @@ func Load(source interface{}) (*AwsConfigFile, error) {
 	}
 	s.BlockMode = true
 
-	return &AwsConfigFile{File: s}, nil
+	c := &AwsConfigFile{File: s}
+	switch t := source.(type) {
+	case string:
+		c.Path = t
+	default:
+		c.Path = ""
+	}
+
+	return c, nil
 }
 
 // Retrieve the configuration for the provided profile.  Since there is no explicit format of the profile
