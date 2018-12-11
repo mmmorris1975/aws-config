@@ -1,4 +1,5 @@
 # aws-config
+[![Go Report Card](https://goreportcard.com/badge/github.com/mmmorris1975/aws-config)](https://goreportcard.com/report/github.com/mmmorris1975/aws-config)
 Utility library to handle AWS cli/sdk config and credential files.
 
 The library provides some AWS wrapping around the `go-ini` library in order handle some idiosyncrasies around profile
