@@ -12,10 +12,13 @@ import (
 )
 
 const (
-	ProfileEnvVar        = "AWS_PROFILE"
+	// The profile environment variable name
+	ProfileEnvVar = "AWS_PROFILE"
+	// The default profile environment variable name
 	DefaultProfileEnvVar = "AWS_DEFAULT_PROFILE"
 )
 
+// The name of the default section in the config file
 var DefaultProfileName = strings.ToLower(ini.DEFAULT_SECTION)
 
 type awsConfigFile struct {
