@@ -7,12 +7,15 @@ import (
 	"os"
 )
 
+// ConfigFileEnvVar is the configuration file environment variable name
 const ConfigFileEnvVar = "AWS_CONFIG_FILE"
 
+// AwsConfigFile is the object used to access profile data in the AWS SDK config file
 type AwsConfigFile struct {
 	*awsConfigFile
 }
 
+// NewAwsConfigFile creates a new AwsConfigFile object from the provides source
 func NewAwsConfigFile(source interface{}) (*AwsConfigFile, error) {
 	c, err := load(source, func(f *awsConfigFile) {
 		s := defaults.SharedConfigFilename()
@@ -29,7 +32,8 @@ func NewAwsConfigFile(source interface{}) (*AwsConfigFile, error) {
 	return &AwsConfigFile{c}, nil
 }
 
-// Override the default Profile lookup logic to include a callback to re-try the lookup with "profile" appended to the name
+// Profile overrides the default Profile lookup logic to include a callback to re-try the lookup with "profile"
+// appended to the name
 func (f *AwsConfigFile) Profile(profile string) (*ini.Section, error) {
 	return f.profile(profile, func(n string) string {
 		return fmt.Sprintf("profile %s", n)
