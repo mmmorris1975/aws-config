@@ -1,17 +1,14 @@
-package credentials
+package config
 
 import (
-	. "aws-config"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/defaults"
 	"github.com/aws/aws-sdk-go/service/iam"
-	"github.com/go-ini/ini"
 	"os"
 )
 
-// credential file env var name
-const CredFileEnvVar = "AWS_SHARED_CREDENTIALS_FILE"
+const CredentialsFileEnvVar = "AWS_SHARED_CREDENTIALS_FILE"
 
 type awsCredentials struct {
 	AccessKey string `ini:"aws_access_key_id"`
@@ -19,44 +16,29 @@ type awsCredentials struct {
 }
 
 type AwsCredentialsFile struct {
-	*ini.File
-	Path string
+	*awsConfigFile
 }
 
-// load the file from the provides source, which may be a string representing a file name,
-// or an []byte of raw data.  If source is nil, it will check the env var AWS_SHARED_CREDENTIALS_FILE;
-// if the env var is not set, it will use the SDK default credential file name.
-func Load(source interface{}) (*AwsCredentialsFile, error) {
-	if source == nil {
-		if v, ok := os.LookupEnv(CredFileEnvVar); ok {
-			source = v
-		} else {
-			source = defaults.SharedCredentialsFilename()
+func NewAwsCredentialsFile(source interface{}) (*AwsCredentialsFile, error) {
+	c, err := load(source, func(f *awsConfigFile) {
+		s := defaults.SharedCredentialsFilename()
+		if e, ok := os.LookupEnv(CredentialsFileEnvVar); ok {
+			s = e
 		}
-	}
-
-	s, err := ini.Load(source)
+		f.path = s
+		f.isTemp = false
+	})
 	if err != nil {
 		return nil, err
 	}
-	s.BlockMode = true
 
-	c := &AwsCredentialsFile{File: s}
-	switch t := source.(type) {
-	case string:
-		c.Path = t
-	default:
-		c.Path = ""
-	}
-
-	return c, nil
+	return &AwsCredentialsFile{c}, nil
 }
 
 // Retrieve the credentials for a given profile name, and provide them as a credentials.Value type
 // Returns an error if the aws_access_key_id and/or aws_secret_access_key properties are missing/unset
 func (f *AwsCredentialsFile) Credentials(profile string) (credentials.Value, error) {
-	p := ResolveProfile(&profile)
-	s, err := f.GetSection(p)
+	s, err := f.Profile(profile)
 	if err != nil {
 		return credentials.Value{}, err
 	}
@@ -78,9 +60,6 @@ func (f *AwsCredentialsFile) Credentials(profile string) (credentials.Value, err
 // the in-memory representation of the data, it is the caller's responsibility to persist the
 // information to storage, either via the SaveTo() or WriteTo() methods.
 func (f *AwsCredentialsFile) UpdateCredentials(profile string, creds interface{}) error {
-	// this feels sort of dangerous, but does allow us to obey env vars
-	p := ResolveProfile(&profile)
-
 	var c awsCredentials
 	switch t := creds.(type) {
 	case nil:
@@ -110,7 +89,7 @@ func (f *AwsCredentialsFile) UpdateCredentials(profile string, creds interface{}
 		return fmt.Errorf("unsupported credential type: %v", t)
 	}
 
-	s, err := f.NewSection(p)
+	s, err := f.Profile(profile)
 	if err != nil {
 		return err
 	}

@@ -1,10 +1,10 @@
 [default]
 region = us-east-2
-output = text
 
 [profile other]
-aws_api_key_duration = 4h
+region = us-west-1
 
 [profile empty]
 
-[bad-ish]
+[uncommon]
+region = eu-west-1

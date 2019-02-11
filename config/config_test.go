@@ -1,165 +1,102 @@
 package config
 
 import (
-	. "aws-config"
 	"os"
 	"testing"
 )
 
-const ConfFile = "test-conf"
+func TestNewAwsConfigFile(t *testing.T) {
+	t.Run("ExplicitSource", func(t *testing.T) {
+		f, err := NewAwsConfigFile(ConfFileName)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		defer f.Close()
 
-func TestLoad(t *testing.T) {
-	t.Run("valid-string", func(t *testing.T) {
-		if _, err := Load(ConfFile); err != nil {
-			t.Error("failed to load config file")
+		if f.path != ConfFileName {
+			t.Error("config file name mismatch")
 			return
 		}
 	})
 
-	t.Run("invalid-string", func(t *testing.T) {
-		if _, err := Load("invalid"); err == nil {
-			t.Error("unexpectedly loaded an invalid file location")
+	t.Run("EnvVarSource", func(t *testing.T) {
+		os.Setenv(ConfigFileEnvVar, ConfFileName)
+		defer os.Unsetenv(ConfigFileEnvVar)
+
+		f, err := NewAwsConfigFile(nil)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		defer f.Close()
+
+		if f.path != ConfFileName {
+			t.Error("config file name mismatch")
 			return
 		}
 	})
 
-	t.Run("bytes-valid", func(t *testing.T) {
-		v := []byte("[default]")
-		if _, err := Load(v); err != nil {
-			t.Errorf("failed to load []byte data: %v", err)
+	t.Run("BadSource", func(t *testing.T) {
+		_, err := NewAwsConfigFile("not-my-file")
+		if err == nil {
+			t.Error("did not see expected error with bad file name")
 			return
 		}
-	})
-
-	t.Run("bytes-invalid", func(t *testing.T) {
-		v := []byte("data")
-		if _, err := Load(v); err == nil {
-			t.Error("unexpectedly loaded invalid []byte data")
-			return
-		}
-	})
-
-	t.Run("nil-envvar", func(t *testing.T) {
-		os.Setenv(ConfFileEnvVar, ConfFile)
-		defer os.Unsetenv(ConfFileEnvVar)
-
-		if _, err := Load(nil); err != nil {
-			t.Errorf("failed to load from env var: %v", err)
-			return
-		}
-	})
-
-	t.Run("nil-default", func(t *testing.T) {
-		// this one will be tricky, since it will check the default location, which may
-		// or may not exist on the local system.  Best we can probably test for is no panics
-		defer func() {
-			if r := recover(); r != nil {
-				t.Error("panic when trying to load default conf file")
-				return
-			}
-		}()
-
-		Load(nil)
 	})
 }
 
 func TestAwsConfigFile_Profile(t *testing.T) {
-	f, err := Load(ConfFile)
+	f, err := NewAwsConfigFile(ConfFileName)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
+		return
 	}
+	defer f.Close()
 
-	t.Run("explicit-default", func(t *testing.T) {
-		if _, err := f.Profile("default"); err != nil {
+	t.Run("Empty", func(t *testing.T) {
+		s, err := f.Profile("")
+		if err != nil {
 			t.Error(err)
+			return
+		}
+
+		if s.Name() != DefaultProfileName {
+			t.Error("mismatched profile name")
 			return
 		}
 	})
 
-	t.Run("empty", func(t *testing.T) {
-		if _, err := f.Profile(""); err != nil {
-			t.Error(err)
-			return
-		}
-	})
-
-	t.Run("non-default", func(t *testing.T) {
+	t.Run("ConfigProfile", func(t *testing.T) {
 		s, err := f.Profile("other")
 		if err != nil {
 			t.Error(err)
 			return
 		}
 
-		if _, err := s.GetKey("aws_api_key_duration"); err != nil {
-			t.Error(err)
+		if s.Name() != "profile other" {
+			t.Error("mismatched profile name")
 			return
 		}
 	})
 
-	t.Run("missing-section", func(t *testing.T) {
-		if _, err := f.Profile("missing"); err == nil {
-			t.Error("succeeded in loading a missing profile")
-			return
-		}
-	})
-
-	t.Run("empty-section", func(t *testing.T) {
-		if _, err := f.Profile("empty"); err != nil {
-			t.Error(err)
-			return
-		}
-	})
-
-	t.Run("bare-profile", func(t *testing.T) {
-		// While loading a non-default profile which isn't prefixed with 'profile' is discouraged by the AWS
-		// cli/sdk, it's not bad form for the ini-file format.
-		if _, err := f.Profile("bad-ish"); err != nil {
-			t.Error(err)
-			return
-		}
-	})
-
-	t.Run("profile-env-var", func(t *testing.T) {
-		os.Setenv(ProfileEnvVar, "other")
-		defer os.Unsetenv(ProfileEnvVar)
-
-		s, err := f.Profile("")
+	t.Run("NonConformingProfile", func(t *testing.T) {
+		s, err := f.Profile("uncommon")
 		if err != nil {
 			t.Error(err)
 			return
 		}
 
-		if _, err := s.GetKey("aws_api_key_duration"); err != nil {
-			t.Error(err)
+		if s.Name() != "uncommon" {
+			t.Error("mismatched profile name")
 			return
 		}
 	})
 
-	t.Run("default-profile-env-var", func(t *testing.T) {
-		os.Setenv(DefaultProfileEnvVar, "other")
-		defer os.Unsetenv(DefaultProfileEnvVar)
-
-		s, err := f.Profile("")
-		if err != nil {
-			t.Error(err)
-			return
-		}
-
-		if _, err := s.GetKey("aws_api_key_duration"); err != nil {
-			t.Error(err)
-			return
-		}
-	})
-
-	t.Run("missing-default", func(t *testing.T) {
-		data := []byte("[s1]\nkey = val\n")
-		f, err := Load(data)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if _, err := f.Profile(""); err == nil {
-			t.Error("loaded a non-existent default profile")
+	t.Run("BadProfile", func(t *testing.T) {
+		_, err := f.Profile("not-good")
+		if err == nil {
+			t.Error("did not see expected error with bad profile name")
 			return
 		}
 	})
