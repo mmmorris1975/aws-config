@@ -15,7 +15,7 @@ type AwsConfigFile struct {
 	*awsConfigFile
 }
 
-// NewAwsConfigFile creates a new AwsConfigFile object from the provides source
+// NewAwsConfigFile creates a new AwsConfigFile object from the provided source
 func NewAwsConfigFile(source interface{}) (*AwsConfigFile, error) {
 	c, err := load(source, func(f *awsConfigFile) {
 		s := defaults.SharedConfigFilename()

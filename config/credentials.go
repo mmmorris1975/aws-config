@@ -8,6 +8,7 @@ import (
 	"os"
 )
 
+// CredentialsFileEnvVar is the credentials file environment variable name
 const CredentialsFileEnvVar = "AWS_SHARED_CREDENTIALS_FILE"
 
 type awsCredentials struct {
@@ -15,10 +16,12 @@ type awsCredentials struct {
 	SecretKey string `ini:"aws_secret_access_key"`
 }
 
+// AwsCredentialsFile is the object used to access profile data in the AWS SDK credentials file
 type AwsCredentialsFile struct {
 	*awsConfigFile
 }
 
+// NewAwsCredentialsFile creates a new AwsCredentialsFile object from the provided source
 func NewAwsCredentialsFile(source interface{}) (*AwsCredentialsFile, error) {
 	c, err := load(source, func(f *awsConfigFile) {
 		s := defaults.SharedCredentialsFilename()
@@ -35,7 +38,7 @@ func NewAwsCredentialsFile(source interface{}) (*AwsCredentialsFile, error) {
 	return &AwsCredentialsFile{c}, nil
 }
 
-// Retrieve the credentials for a given profile name, and provide them as a credentials.Value type
+// Credentials retrieves the credentials for a given profile name, and provide them as a credentials.Value type
 // Returns an error if the aws_access_key_id and/or aws_secret_access_key properties are missing/unset
 func (f *AwsCredentialsFile) Credentials(profile string) (credentials.Value, error) {
 	s, err := f.Profile(profile)
@@ -55,10 +58,10 @@ func (f *AwsCredentialsFile) Credentials(profile string) (credentials.Value, err
 	return credentials.Value{AccessKeyID: c.AccessKey, SecretAccessKey: c.SecretKey}, nil
 }
 
-// Update the credentials for a given profile, with the provided credentials.  The creds can be
-// an iam.AccessKey or credentials.Value type (or pointers to either).  Updates are only made to
-// the in-memory representation of the data, it is the caller's responsibility to persist the
-// information to storage, either via the SaveTo() or WriteTo() methods.
+// UpdateCredentials updates the credentials for a given profile, with the provided credentials.  The creds can be
+// an iam.AccessKey or credentials.Value type (or pointers to either).  Updates are only made to the in-memory
+// representation of the data, it is the caller's responsibility to persist the information to storage,
+// either via the SaveTo() or WriteTo() methods.
 func (f *AwsCredentialsFile) UpdateCredentials(profile string, creds interface{}) error {
 	var c awsCredentials
 	switch t := creds.(type) {
@@ -94,9 +97,5 @@ func (f *AwsCredentialsFile) UpdateCredentials(profile string, creds interface{}
 		return err
 	}
 
-	if err := s.ReflectFrom(&c); err != nil {
-		return err
-	}
-
-	return nil
+	return s.ReflectFrom(&c)
 }
