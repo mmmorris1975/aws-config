@@ -1,4 +1,4 @@
-module aws-config
+module github.com/mmmorris1975/aws-config
 
 require (
 	github.com/aws/aws-sdk-go v1.16.31
