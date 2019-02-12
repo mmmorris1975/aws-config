@@ -101,14 +101,7 @@ func (f *awsConfigFile) Profile(name string) (*ini.Section, error) {
 // not found.  This should satisfy the oddity that is the AWS config file where non-default profiles should be prefixed
 // with "profile" in the name.
 func (f *awsConfigFile) profile(name string, nfh func(n string) string) (*ini.Section, error) {
-	if len(name) < 1 {
-		var ok bool
-		if name, ok = os.LookupEnv(ProfileEnvVar); !ok {
-			if name, ok = os.LookupEnv(DefaultProfileEnvVar); !ok {
-				name = DefaultProfileName
-			}
-		}
-	}
+	name = ResolveProfile(&name)
 
 	s, err := f.GetSection(name)
 	if err != nil {
@@ -161,4 +154,18 @@ func fetchHttpSource(u *url.URL) (*os.File, error) {
 	}
 
 	return ioutil.TempFile("", "AwsConfigLoader-")
+}
+
+// ResolveProfile is a helper method to check the env vars for a profile name if the provided argument is nil or empty
+func ResolveProfile(p *string) string {
+	if p == nil || len(*p) < 1 {
+		var ok bool
+		if *p, ok = os.LookupEnv(ProfileEnvVar); !ok {
+			if *p, ok = os.LookupEnv(DefaultProfileEnvVar); !ok {
+				*p = DefaultProfileName
+			}
+		}
+	}
+
+	return *p
 }
