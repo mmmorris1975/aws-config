@@ -22,7 +22,7 @@ func NewAwsConfigFile(source interface{}) (*AwsConfigFile, error) {
 		if e, ok := os.LookupEnv(ConfigFileEnvVar); ok {
 			s = e
 		}
-		f.path = s
+		f.Path = s
 		f.isTemp = false
 	})
 	if err != nil {

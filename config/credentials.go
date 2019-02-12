@@ -28,7 +28,7 @@ func NewAwsCredentialsFile(source interface{}) (*AwsCredentialsFile, error) {
 		if e, ok := os.LookupEnv(CredentialsFileEnvVar); ok {
 			s = e
 		}
-		f.path = s
+		f.Path = s
 		f.isTemp = false
 	})
 	if err != nil {

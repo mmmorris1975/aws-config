@@ -14,7 +14,7 @@ func TestNewAwsConfigFile(t *testing.T) {
 		}
 		defer f.Close()
 
-		if f.path != ConfFileName {
+		if f.Path != ConfFileName {
 			t.Error("config file name mismatch")
 			return
 		}
@@ -31,7 +31,7 @@ func TestNewAwsConfigFile(t *testing.T) {
 		}
 		defer f.Close()
 
-		if f.path != ConfFileName {
+		if f.Path != ConfFileName {
 			t.Error("config file name mismatch")
 			return
 		}

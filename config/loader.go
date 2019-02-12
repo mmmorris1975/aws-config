@@ -23,7 +23,7 @@ var DefaultProfileName = strings.ToLower(ini.DEFAULT_SECTION)
 
 type awsConfigFile struct {
 	*ini.File
-	path   string
+	Path   string
 	isTemp bool
 }
 
@@ -37,19 +37,19 @@ func load(source interface{}, def func(f *awsConfigFile)) (*awsConfigFile, error
 			if err := f.urlHandler(u); err != nil {
 				return nil, err
 			}
-			source = f.path
+			source = f.Path
 		}
 	case *url.URL:
 		if err := f.urlHandler(t); err != nil {
 			return nil, err
 		}
-		source = f.path
+		source = f.Path
 	case []byte:
 		// raw bytes, explicitly supported in go-ini
 		f.isTemp = false
 	case *os.File:
 		// file object, explicitly supported in go-ini (just set path attribute in our struct)
-		f.path = t.Name()
+		f.Path = t.Name()
 		f.isTemp = false
 	case io.Reader:
 		// other kind of reader (ensure it's a ReadCloser here so it's supported by go-ini)
@@ -63,8 +63,8 @@ func load(source interface{}, def func(f *awsConfigFile)) (*awsConfigFile, error
 			def(f)
 		}
 
-		if len(f.path) > 0 {
-			source = f.path
+		if len(f.Path) > 0 {
+			source = f.Path
 		}
 	}
 
@@ -122,7 +122,7 @@ func (f *awsConfigFile) profile(name string, nfh func(n string) string) (*ini.Se
 
 func (f *awsConfigFile) Close() error {
 	if f.isTemp {
-		return os.Remove(f.path)
+		return os.Remove(f.Path)
 	}
 	return nil
 }
@@ -134,13 +134,13 @@ func (f *awsConfigFile) urlHandler(u *url.URL) error {
 		if err != nil {
 			return err
 		}
-		f.path = tf.Name()
+		f.Path = tf.Name()
 		f.isTemp = true
 	case "file":
-		f.path = u.Opaque
+		f.Path = u.Opaque
 		f.isTemp = false
 	case "":
-		f.path = u.Path
+		f.Path = u.Path
 		f.isTemp = false
 	default:
 		// error: not supported

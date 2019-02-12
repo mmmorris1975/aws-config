@@ -19,7 +19,7 @@ func TestLoad(t *testing.T) {
 				t.Error(err)
 			}
 
-			if c.path != ConfFileName {
+			if c.Path != ConfFileName {
 				t.Error("file name mismatch")
 			}
 
@@ -42,7 +42,7 @@ func TestLoad(t *testing.T) {
 				return
 			}
 
-			if c.path != ConfFileName {
+			if c.Path != ConfFileName {
 				t.Error("file name mismatch")
 			}
 
@@ -68,7 +68,7 @@ func TestLoad(t *testing.T) {
 			}
 			defer c.Close()
 
-			if c.path != ConfFileName {
+			if c.Path != ConfFileName {
 				t.Error("file name mismatch")
 			}
 
@@ -86,7 +86,7 @@ func TestLoad(t *testing.T) {
 			}
 			defer c.Close()
 
-			if c.path != ConfFileName {
+			if c.Path != ConfFileName {
 				t.Error("file name mismatch")
 			}
 
@@ -175,7 +175,7 @@ func TestLoad(t *testing.T) {
 			}
 			defer c.Close()
 
-			if c.path != ConfFileName {
+			if c.Path != ConfFileName {
 				t.Error("file name mismatch")
 			}
 

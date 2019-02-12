@@ -18,7 +18,7 @@ func TestNewAwsCredentialsFile(t *testing.T) {
 			return
 		}
 
-		if f.path != CredFileName {
+		if f.Path != CredFileName {
 			t.Error("file path mismatch")
 			return
 		}
@@ -34,7 +34,7 @@ func TestNewAwsCredentialsFile(t *testing.T) {
 			return
 		}
 
-		if f.path != CredFileName {
+		if f.Path != CredFileName {
 			t.Error("file path mismatch")
 			return
 		}
