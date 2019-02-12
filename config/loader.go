@@ -159,12 +159,14 @@ func fetchHttpSource(u *url.URL) (*os.File, error) {
 // ResolveProfile is a helper method to check the env vars for a profile name if the provided argument is nil or empty
 func ResolveProfile(p *string) string {
 	if p == nil || len(*p) < 1 {
+		var n string
 		var ok bool
-		if *p, ok = os.LookupEnv(ProfileEnvVar); !ok {
-			if *p, ok = os.LookupEnv(DefaultProfileEnvVar); !ok {
-				*p = DefaultProfileName
+		if n, ok = os.LookupEnv(ProfileEnvVar); !ok {
+			if n, ok = os.LookupEnv(DefaultProfileEnvVar); !ok {
+				n = DefaultProfileName
 			}
 		}
+		return n
 	}
 
 	return *p
