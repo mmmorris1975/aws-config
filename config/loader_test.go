@@ -184,6 +184,15 @@ func TestLoad(t *testing.T) {
 			}
 		})
 	})
+
+	t.Run("DefaultNoFallback", func(t *testing.T) {
+		f, err := load(nil, nil)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		defer f.Close()
+	})
 }
 
 func TestProfileStrings(t *testing.T) {

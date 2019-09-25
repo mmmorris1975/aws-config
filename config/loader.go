@@ -58,13 +58,17 @@ func load(source interface{}, def func(f *awsConfigFile)) (*awsConfigFile, error
 		}
 		f.isTemp = false
 	default:
+		source = []byte("[default]")
+
 		// callback to perform default action
 		if def != nil {
 			def(f)
 		}
 
 		if len(f.Path) > 0 {
-			source = f.Path
+			if _, err := os.Stat(f.Path); err == nil {
+				source = f.Path
+			}
 		}
 	}
 
