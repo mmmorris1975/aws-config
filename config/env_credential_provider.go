@@ -4,7 +4,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 )
 
-// EnvCredentialProfile enables the lookup of AWS credentials from environment variables
+// EnvCredentialProvider enables the lookup of AWS credentials from environment variables
 type EnvCredentialProvider uint8
 
 // NewEnvCredentialProvider initializes a default EnvCredentialProvider

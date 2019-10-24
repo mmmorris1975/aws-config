@@ -9,12 +9,16 @@ import (
 	"time"
 )
 
+// EnvConfigProvider enables the lookup of AWS configuration from environment variables
 type EnvConfigProvider uint8
 
+// NewEnvConfigProvider creates an EnvConfigProvider with the default configuration
 func NewEnvConfigProvider() *EnvConfigProvider {
 	return new(EnvConfigProvider)
 }
 
+// Config will return the configuration attributes found in the environment variables.  The profile argument to this
+// call is ignored, and only used to set the Profile attribute of the returned AwsConfig object.
 func (p *EnvConfigProvider) Config(profile ...string) (*AwsConfig, error) {
 	c := AwsConfig{}
 

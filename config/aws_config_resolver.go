@@ -8,8 +8,8 @@ type awsConfigResolver struct {
 	configProvider       AwsConfigProvider
 }
 
-// Create a default AWS config resolver which will lookup information in the INI config source for the default profile,
-// and source_profile (if configured), and merge with the data in the provided profile
+// NewAwsConfigResolver creates a default AWS config resolver which will lookup information in the INI config source for
+// the default profile, and source_profile (if configured), and merge with the data in the provided profile
 func NewAwsConfigResolver(source interface{}) (*awsConfigResolver, error) {
 	cp, err := NewIniConfigProvider(source)
 	if err != nil {
@@ -46,7 +46,7 @@ func (r *awsConfigResolver) WithConfigProvider(p AwsConfigProvider) *awsConfigRe
 
 // Merge will combine the attributes of the provided AwsConfig types and return it as a single AwsConfig.
 // Objects later in the input list will overwrite values in earlier objects if the value for the attribute is
-// not empty, or the explict string "0"
+// not empty, or the explicit string "0"
 func (r *awsConfigResolver) Merge(config ...*AwsConfig) (*AwsConfig, error) {
 	c := new(AwsConfig)
 	c.rawAttributes = make(map[string]string)
@@ -83,6 +83,9 @@ func (r *awsConfigResolver) Merge(config ...*AwsConfig) (*AwsConfig, error) {
 	return c, nil
 }
 
+// Resolve gathers the configuration attributes for the given profile.  If the resolver is set to lookup default or
+// source_profile configuration, that data is also merged in to the returned configuration object.  The resolution order
+// is: default, source_profile, profile
 func (r *awsConfigResolver) Resolve(profile ...string) (*AwsConfig, error) {
 	if profile == nil || len(profile) < 1 {
 		// quick path ... return default profile data

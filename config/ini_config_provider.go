@@ -10,11 +10,14 @@ import (
 // ConfigFileEnvVar is the configuration file environment variable name
 const ConfigFileEnvVar = "AWS_CONFIG_FILE"
 
-// IniCredentialProvider enables the lookup of AWS credentials from an ini-formatted data source
+// IniConfigProvider enables the lookup of AWS configuration from an ini-formatted data source
 type IniConfigProvider struct {
 	*awsConfigFile
 }
 
+// NewIniConfigProvider initializes a default IniConfigProvider using the specified source.  Valid sources
+// include, a string representing a file path or url (file and http(s) urls supported), a Golang *url.URL, an []byte,
+// a *os.File, or an io.Reader
 func NewIniConfigProvider(source interface{}) (*IniConfigProvider, error) {
 	cf, err := load(source, func(f *awsConfigFile) {
 		s := defaults.SharedConfigFilename()
@@ -31,6 +34,8 @@ func NewIniConfigProvider(source interface{}) (*IniConfigProvider, error) {
 	return &IniConfigProvider{cf}, nil
 }
 
+// Config will return the configuration attributes for the specified profile.  If the profile is nil, the
+// configuration of the default profile will be returned.
 func (p *IniConfigProvider) Config(profile ...string) (*AwsConfig, error) {
 	c := new(AwsConfig)
 

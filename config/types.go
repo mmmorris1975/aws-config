@@ -39,6 +39,7 @@ type AwsCredentialProvider interface {
 	Credentials(profile ...string) (credentials.Value, error)
 }
 
+// AwsConfigResolver is an interface defining the contract for conforming types to provide AWS config resolution
 type AwsConfigResolver interface {
 	Merge(config ...*AwsConfig) (*AwsConfig, error)
 	Resolve(profile ...string) (*AwsConfig, error)
