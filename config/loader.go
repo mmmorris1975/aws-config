@@ -19,7 +19,7 @@ const (
 )
 
 // DefaultProfileName is the name of the default section in the config file
-var DefaultProfileName = strings.ToLower(ini.DEFAULT_SECTION)
+var DefaultProfileName = strings.ToLower(ini.DefaultSection)
 
 type awsConfigFile struct {
 	*ini.File
@@ -86,7 +86,7 @@ func (f *awsConfigFile) ProfileStrings() []string {
 	fmt.Printf("%+v\n", f.SectionStrings())
 	for _, v := range f.SectionStrings() {
 		// Skip the go-ini DEFAULT section
-		if v != ini.DEFAULT_SECTION {
+		if v != ini.DefaultSection {
 			s = append(s, strings.TrimPrefix(v, "profile "))
 		}
 	}
