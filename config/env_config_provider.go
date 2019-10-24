@@ -45,19 +45,19 @@ func (p *EnvConfigProvider) Config(profile ...string) (*AwsConfig, error) {
 				i = 0
 			}
 			vField.SetInt(i)
-		case reflect.Uint, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			// byte is an alias for uint8, so supporting uint8 breaks support for byte
-			i, err := strconv.ParseUint(e, 0, 64)
-			if err != nil {
-				i = 0
-			}
-			vField.SetUint(i)
-		case reflect.Float32, reflect.Float64:
-			f, err := strconv.ParseFloat(e, 64)
-			if err != nil {
-				f = 0
-			}
-			vField.SetFloat(f)
+			//case reflect.Uint, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			//	// byte is an alias for uint8, so supporting uint8 breaks support for byte
+			//	i, err := strconv.ParseUint(e, 0, 64)
+			//	if err != nil {
+			//		i = 0
+			//	}
+			//	vField.SetUint(i)
+			//case reflect.Float32, reflect.Float64:
+			//	f, err := strconv.ParseFloat(e, 64)
+			//	if err != nil {
+			//		f = 0
+			//	}
+			//	vField.SetFloat(f)
 		}
 	}
 
