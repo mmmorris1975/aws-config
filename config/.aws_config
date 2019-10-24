@@ -1,10 +1,18 @@
 [default]
 region = us-east-2
+mfa_serial = arn:aws::iam:mfa/12345
 
 [profile other]
 region = us-west-1
+custom_attribute = whatIsIt
 
 [profile empty]
 
 [uncommon]
 region = eu-west-1
+
+[profile mfa]
+region = ap-southeast-2
+source_profile = default
+role_arn = arn:aws::iam:role/Admin
+external_id = qq

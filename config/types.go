@@ -17,6 +17,12 @@ type AwsConfig struct {
 	rawAttributes    map[string]string
 }
 
+// Get will return the value of the INI config attribute name specified in attr
+// Useful for retrieving custom attributes in the config, or seeing the attribute's raw data
+func (c *AwsConfig) Get(attr string) string {
+	return c.rawAttributes[attr]
+}
+
 type awsCredentials struct {
 	AccessKey    string `ini:"aws_access_key_id" env:"AWS_ACCESS_KEY_ID,AWS_ACCESS_KEY"`
 	SecretKey    string `ini:"aws_secret_access_key" env:"AWS_SECRET_ACCESS_KEY,AWS_SECRET_KEY"`
