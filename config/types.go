@@ -32,3 +32,8 @@ type AwsConfigProvider interface {
 type AwsCredentialProvider interface {
 	Credentials(profile ...string) (credentials.Value, error)
 }
+
+type AwsConfigResolver interface {
+	Merge(config ...*AwsConfig) (*AwsConfig, error)
+	Resolve(profile ...string) (*AwsConfig, error)
+}
