@@ -65,10 +65,9 @@ func (p *IniCredentialProvider) Credentials(profile ...string) (credentials.Valu
 	return v, nil
 }
 
-// UpdateCredentials updates the credentials for a given profile, with the provided credentials.  The creds can be
-// an iam.AccessKey or credentials.Value type (or pointers to either).  Updates are only made to the in-memory
-// representation of the data, it is the caller's responsibility to persist the information to storage,
-// either via the SaveTo() or WriteTo() methods.
+// UpdateCredentials updates the given profile with the provided credentials.  The creds can be an iam.AccessKey or
+// credentials.Value type (or pointers to either).  Updates are only made to the in-memory representation of the data,
+// it is the caller's responsibility to persist the information to storage, either via the SaveTo() or WriteTo() methods.
 func (p *IniCredentialProvider) UpdateCredentials(profile string, creds interface{}) error {
 	c := new(awsCredentials)
 

@@ -14,6 +14,7 @@ type AwsConfig struct {
 	RoleArn          string `ini:"role_arn"`
 	RoleSessionName  string `ini:"role_session_name" env:"AWS_ROLE_SESSION_NAME"`
 	SourceProfile    string `ini:"source_profile"`
+	rawAttributes    map[string]string
 }
 
 type awsCredentials struct {
@@ -24,7 +25,7 @@ type awsCredentials struct {
 
 // AwsConfigProvider is an interface defining the contract for conforming types to provide AWS configuration
 type AwsConfigProvider interface {
-	Config(profile ...string) (AwsConfig, error)
+	Config(profile ...string) (*AwsConfig, error)
 }
 
 // AwsCredentialProvider is an interface defining the contract for conforming types to provide AWS credentials
