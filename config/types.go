@@ -32,6 +32,7 @@ type awsCredentials struct {
 // AwsConfigProvider is an interface defining the contract for conforming types to provide AWS configuration
 type AwsConfigProvider interface {
 	Config(profile ...string) (*AwsConfig, error)
+	ListProfiles(bool) []string
 }
 
 // AwsCredentialProvider is an interface defining the contract for conforming types to provide AWS credentials
@@ -43,4 +44,5 @@ type AwsCredentialProvider interface {
 type AwsConfigResolver interface {
 	Merge(config ...*AwsConfig) (*AwsConfig, error)
 	Resolve(profile ...string) (*AwsConfig, error)
+	ListProfiles(bool) []string
 }

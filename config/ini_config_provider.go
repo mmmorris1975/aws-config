@@ -5,6 +5,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/defaults"
 	"github.com/go-ini/ini"
 	"os"
+	"sort"
+	"strings"
 )
 
 // ConfigFileEnvVar is the configuration file environment variable name
@@ -64,4 +66,29 @@ func (p *IniConfigProvider) Profile(profile string) (*ini.Section, error) {
 	return p.profile(profile, func(n string) string {
 		return fmt.Sprintf("profile %s", n)
 	})
+}
+
+// ListProfiles will return an array of profile names found in the config file.  If the roles arg is false,
+// then all profile sections found in the config file will be returned; otherwise only profile sections which
+// have the role_arn property will be returned.
+func (p *IniConfigProvider) ListProfiles(roles bool) []string {
+	profiles := make([]string, 0)
+
+	for _, s := range p.Sections() {
+		if s.Name() == ini.DefaultSection {
+			continue
+		}
+
+		n := strings.TrimPrefix(s.Name(), "profile ")
+		if roles {
+			if s.HasKey("role_arn") {
+				profiles = append(profiles, n)
+			}
+		} else {
+			profiles = append(profiles, n)
+		}
+	}
+
+	sort.Strings(profiles)
+	return profiles
 }

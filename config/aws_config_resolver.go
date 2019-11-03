@@ -1,6 +1,8 @@
 package config
 
-import "strconv"
+import (
+	"strconv"
+)
 
 type awsConfigResolver struct {
 	lookupDefaultProfile bool
@@ -116,4 +118,8 @@ func (r *awsConfigResolver) Resolve(profile ...string) (*AwsConfig, error) {
 	}
 
 	return r.Merge(append(c, p)...)
+}
+
+func (r *awsConfigResolver) ListProfiles(roles bool) []string {
+	return r.configProvider.ListProfiles(roles)
 }

@@ -91,3 +91,25 @@ func TestAwsConfigResolver_Resolve(t *testing.T) {
 		}
 	})
 }
+
+func TestAwsConfigResolver_ListProfiles(t *testing.T) {
+	f, err := NewAwsConfigResolver(ConfFileName)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("arg true", func(t *testing.T) {
+		profiles := f.ListProfiles(true)
+		if len(profiles) != 1 {
+			t.Error("did not find expected number of role profile sections")
+		}
+	})
+
+	t.Run("arg false", func(t *testing.T) {
+		profiles := f.ListProfiles(false)
+		if len(profiles) < 5 {
+			t.Error("did not find expected number of role profile sections")
+		}
+	})
+}

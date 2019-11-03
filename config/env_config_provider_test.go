@@ -93,3 +93,19 @@ func TestEnvConfigProvider_Config(t *testing.T) {
 		}
 	})
 }
+
+func TestEnvConfigProvider_ListProfiles(t *testing.T) {
+	t.Run("arg true", func(t *testing.T) {
+		p := cfg.ListProfiles(true)
+		if len(p) > 0 {
+			t.Error("unexpectedly received profiles")
+		}
+	})
+
+	t.Run("arg false", func(t *testing.T) {
+		p := cfg.ListProfiles(false)
+		if len(p) > 0 {
+			t.Error("unexpectedly received profiles")
+		}
+	})
+}

@@ -68,6 +68,11 @@ func (p *EnvConfigProvider) Config(profile ...string) (*AwsConfig, error) {
 	return &c, nil
 }
 
+// ListProfiles is not supported for EnvConfigProviders, returns an empty array
+func (p *EnvConfigProvider) ListProfiles(roles bool) []string {
+	return []string{}
+}
+
 func lookupEnvTag(tag string) string {
 	if len(tag) > 0 {
 		for _, s := range strings.Split(tag, ",") {
