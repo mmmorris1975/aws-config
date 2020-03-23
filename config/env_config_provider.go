@@ -21,6 +21,7 @@ func NewEnvConfigProvider() *EnvConfigProvider {
 // call is ignored, and only used to set the Profile attribute of the returned AwsConfig object.
 func (p *EnvConfigProvider) Config(profile ...string) (*AwsConfig, error) {
 	c := AwsConfig{}
+	c.rawAttributes = make(map[string]string)
 
 	v := reflect.ValueOf(&c)
 	t := reflect.TypeOf(c)
@@ -29,6 +30,12 @@ func (p *EnvConfigProvider) Config(profile ...string) (*AwsConfig, error) {
 		vField := v.Elem().Field(i)
 
 		e := lookupEnvTag(tField.Tag.Get("env"))
+
+		// set value in rawAttributes as well, if the env var is set, and there's a corresponding ini tag
+		// makes sure that Merge() in the config resolver works as expected
+		if f := tField.Tag.Get("ini"); len(f) > 0  && len(e) > 0 {
+			c.rawAttributes[f] = e
+		}
 
 		switch tField.Type.Kind() {
 		case reflect.String:
